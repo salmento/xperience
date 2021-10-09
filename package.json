@@ -1,0 +1,32 @@
+{
+  "name": "xperience",
+  "version": "1.0.0",
+  "description": "Xperiece is E learning plataform and this backend API is to integrate the paynet",
+  "main": "index.js",
+  "scripts": {
+    "test": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/salmento/xperience.git"
+  },
+  "keywords": [
+    "Xperience",
+    "e-learning",
+    "lessons",
+    "knowledge"
+  ],
+  "author": "Salmento Chitlango",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/salmento/xperience/issues"
+  },
+  "homepage": "https://github.com/salmento/xperience#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "swagger-ui-dist": "^3.52.3",
+    "swagger-ui-express": "^4.1.6"
+  }
+}

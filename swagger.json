@@ -1,0 +1,2970 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "This is a  Txekah documentation @VillaInova [https://villainova.co.mz](https://villainova.co.mz) @Villa INova",
+    "version": "1.0.0",
+    "title": "Txeka documentation",
+    "termsOfService": "This API is only available to Villa Inova to use",
+    "contact": {
+      "name": "API Support",
+      "email": "salmentochitlango@gmail.com"
+    },
+    "license": {
+      "name": "©copyright",
+      "url": "https://en.wikipedia.org/wiki/Copyright"
+    }
+  },
+  "host": "txeka.herokuapp.com",
+  "basePath": "/api",
+  "tags": [
+    {
+      "name": "Users",
+      "description": "All routes to create, update, view and deactivate/active users (users receive moderator, admin or user role)"
+    },
+    {
+      "name": "Company",
+      "description": "All routes to create, update, view or deactivate/active companies"
+    },
+    {
+      "name": "Company_categories",
+      "description": "All routes to create, update, view all category"
+    },
+    {
+      "name": "Documents",
+      "description": "All routes to create, update, view all documents"
+    },
+    {
+      "name": "Folders",
+      "description": "All routes to create, update, view all Folders"
+    },
+    {
+      "name": "Solicitations",
+      "description": "All routes related to ask for document or treat document"
+    },
+    {
+      "name": "Notifications",
+      "description": "All routes to preview notifications and update notifications"
+    }
+  ],
+  "schemes": [
+    "https",
+    "http"
+  ],
+  "paths": {
+    "/auth/signup": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Create new Admin",
+        "operationId": "CreateNewAdmin",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "username",
+            "in": "formData",
+            "description": "it's used login into the system",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "email",
+            "in": "formData",
+            "description": "it's used to notify users",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "password",
+            "in": "formData",
+            "description": "it's used to login into the system",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "roles",
+            "in": "body",
+            "description": "it's used differentiate the system's users ",
+            "required": true,
+            "type": "string",
+            "enum": [
+              "admin",
+              "moderator",
+              "user"
+            ],
+            "example": [
+              "admin"
+            ]
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "The user was created"
+          },
+          "400": {
+            "description": "Bad parameters were passed"
+          },
+          "403": {
+            "description": "Require Admin Roles"
+          },
+          "500": {
+            "description": "The server failed trying to save data"
+          }
+        }
+      }
+    },
+    "/auth/passwordRecovery": {
+      "put": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Recover Password",
+        "description": "Allow users to recover password by passing the email",
+        "operationId": "RecoverPassword",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "formData",
+            "name": "email",
+            "description": "the only required data to recovery password is  email",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Users"
+            }
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "The server failed to fetch data of using passed email"
+          },
+          "400": {
+            "description": "Bad parameters/ email not provided "
+          },
+          "404": {
+            "description": "The provided email address is not registered"
+          },
+          "200": {
+            "description": "The password was successfully recovered and sent to passed email"
+          }
+        }
+      }
+    },
+    "/auth/signin": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Allow users to login into the system",
+        "description": "Sing in method",
+        "operationId": "Login",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "formData",
+            "name": "username",
+            "description": "username is one of login factor",
+            "required": true,
+            "type": "string",
+            "example": "salmento"
+          },
+          {
+            "in": "formData",
+            "name": "password",
+            "description": "password is one of login factor",
+            "required": true,
+            "type": "password",
+            "example": "S@lm&n123"
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "The server failed to fetch data"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "401": {
+            "description": "Invalid passed parameters"
+          },
+          "200": {
+            "description": "The user was successfully logged in and token is provided as return",
+            "schema": {
+              "$ref": "#/definitions/Users"
+            }
+          }
+        }
+      }
+    },
+    "/users/all": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "return all users in the system",
+        "operationId": "allUsers",
+        "parameters": [
+          {
+            "name": "Token",
+            "in": "header",
+            "description": "Is used to verify if the user is logged in",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "It return JSON with all registered users",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/Users"
+              }
+            }
+          },
+          "404": {
+            "description": "Error loading users"
+          }
+        }
+      }
+    },
+    "/users/allmoderator": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "return related moderator information",
+        "operationId": "alUsers",
+        "parameters": [
+          {
+            "name": "Token",
+            "in": "header",
+            "description": "Is used to verify if the user is logged in",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "It return JSON with all registered users",
+            "schema": {
+              "$ref": "#/definitions/Users"
+            }
+          },
+          "404": {
+            "description": "Error loading users"
+          }
+        }
+      }
+    },
+    "/users/{userId}": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Find user by passed id as parameters",
+        "description": "Return a single required user information",
+        "operationId": "findUserById",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "header",
+            "description": "Return user that has passed user id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "Return user that has passed user id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/Users"
+            }
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "500": {
+            "description": "The server failed"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Update users profile",
+        "description": "Allow users to update is own information",
+        "operationId": "updateUser",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "header",
+            "description": "user generated token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "user id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "username",
+            "in": "formData",
+            "description": "username",
+            "type": "string"
+          },
+          {
+            "name": "password",
+            "in": "formData",
+            "description": "password",
+            "type": "password"
+          },
+          {
+            "name": "first_name",
+            "in": "formData",
+            "description": "First name ",
+            "type": "string",
+            "example": "Salmento"
+          },
+          {
+            "name": "middle_name",
+            "in": "formData",
+            "description": "Middle name ",
+            "type": "string",
+            "example": "Adelia"
+          },
+          {
+            "name": "last_name",
+            "in": "formData",
+            "description": "last name ",
+            "type": "string",
+            "example": "Chitlango"
+          },
+          {
+            "name": "birth_date",
+            "in": "formData",
+            "description": "birth date format: YYYY-MM-DD",
+            "type": "date",
+            "example": "2021-05-05"
+          },
+          {
+            "email": "email",
+            "in": "formData",
+            "description": "email",
+            "type": "string",
+            "example": "salmentochitlango@gmail.com"
+          },
+          {
+            "name": "roles",
+            "in": "formData",
+            "description": "moderator",
+            "type": "string",
+            "enum": [
+              "admin",
+              "moderator",
+              "user"
+            ],
+            "example": [
+              "moderator"
+            ]
+          },
+          {
+            "name": "region",
+            "in": "formData",
+            "description": "Region",
+            "type": "string",
+            "example": "Africa"
+          },
+          {
+            "name": "country",
+            "in": "formData",
+            "description": "Country",
+            "type": "string",
+            "example": "Mozambique"
+          },
+          {
+            "name": "province",
+            "in": "formData",
+            "description": "Province or State",
+            "type": "string",
+            "example": "Maputo, Sao Paulo"
+          },
+          {
+            "name": "city",
+            "in": "formData",
+            "description": "City",
+            "type": "string",
+            "example": "Matola"
+          },
+          {
+            "name": "house_nr",
+            "in": "formData",
+            "description": "House number",
+            "type": "string",
+            "example": "123"
+          },
+          {
+            "name": "postal_code",
+            "in": "formData",
+            "description": "Postal code",
+            "type": "string",
+            "example": "1100"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The user was added",
+            "schema": {
+              "$ref": "#/definitions/Users"
+            }
+          }
+        },
+        "400": {
+          "description": "Bad parameters"
+        },
+        "500": {
+          "description": "The server failed to register the moderator"
+        }
+      }
+    },
+    "/users/profile": {
+      "put": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Update user profile",
+        "description": "Allow users to update is own profile",
+        "operationId": "userProfile",
+        "consumes": [
+          "application/json",
+          "multipart/form-data"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "header",
+            "description": "admin generated token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "file",
+            "in": "formData",
+            "description": "the photo profile",
+            "required": true,
+            "type": "file"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The photo was updated"
+          },
+          "400": {
+            "description": "Bad parameters"
+          },
+          "500": {
+            "description": "The server failed to register the moderator"
+          }
+        }
+      }
+    },
+    "/changestatus/{user_id}": {
+      "put": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Deactivate or active",
+        "description": "Allow moderator or admin to deactivate or active users",
+        "operationId": "activeUsers",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "header",
+            "description": "admin or moderator token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "user_id",
+            "in": "path",
+            "description": "id of user to be deactivated or active",
+            "required": true,
+            "example": "6049eb361a2b4a0015c9f5c3"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The user were deactivate or active"
+          },
+          "400": {
+            "description": "Bad parameters"
+          },
+          "500": {
+            "description": "The server failed to active or deactivate user"
+          }
+        }
+      }
+    },
+    "/users/": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Register moderator",
+        "description": "Admin has a permission to register moderator and user will receive username and password through emails",
+        "operationId": "registerModerator",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "header",
+            "description": "admin generated token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "first_name",
+            "in": "formData",
+            "description": "First name ",
+            "required": true,
+            "type": "string",
+            "example": "Salmento"
+          },
+          {
+            "name": "middle_name",
+            "in": "formData",
+            "description": "Middle name ",
+            "type": "string",
+            "example": "Adelia"
+          },
+          {
+            "name": "last_name",
+            "in": "formData",
+            "description": "last name ",
+            "required": true,
+            "type": "string",
+            "example": "Chitlango"
+          },
+          {
+            "name": "birth_date",
+            "in": "formData",
+            "description": "birth date format: YYYY-MM-DD",
+            "type": "date",
+            "example": "2021-05-05"
+          },
+          {
+            "email": "email",
+            "in": "formData",
+            "description": "email",
+            "required": true,
+            "type": "string",
+            "example": "salmentochitlango@gmail.com"
+          },
+          {
+            "name": "roles",
+            "in": "formData",
+            "description": "moderator",
+            "type": "string",
+            "enum": [
+              "admin",
+              "moderator",
+              "user"
+            ],
+            "example": [
+              "moderator"
+            ]
+          },
+          {
+            "name": "region",
+            "in": "formData",
+            "description": "Region",
+            "type": "string",
+            "example": "Africa"
+          },
+          {
+            "name": "country",
+            "in": "formData",
+            "description": "Country",
+            "type": "string",
+            "example": "Mozambique"
+          },
+          {
+            "name": "province",
+            "in": "formData",
+            "description": "Province or State",
+            "type": "string",
+            "example": "Maputo, Sao Paulo"
+          },
+          {
+            "name": "city",
+            "in": "formData",
+            "description": "City",
+            "type": "string",
+            "example": "Matola"
+          },
+          {
+            "name": "house_nr",
+            "in": "formData",
+            "description": "House number",
+            "type": "string",
+            "example": "123"
+          },
+          {
+            "name": "postal_code",
+            "in": "formData",
+            "description": "Postal code",
+            "type": "string",
+            "example": "1100"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The user was added",
+            "schema": {
+              "$ref": "#/definitions/Users"
+            }
+          }
+        },
+        "400": {
+          "description": "Bad parameters"
+        },
+        "500": {
+          "description": "The server failed to register the moderator"
+        }
+      },
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Find user by passed token",
+        "description": "Return a single required user information",
+        "operationId": "findUsrById",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "header",
+            "description": "Return user that has passed user id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/Users"
+            }
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "500": {
+            "description": "The server failed"
+          }
+        }
+      }
+    },
+    "/categories": {
+      "get": {
+        "tags": [
+          "Company_categories"
+        ],
+        "summary": "Find all registered companies categories",
+        "description": "Returns a set of companies categories",
+        "produces": [
+          "application/json"
+        ],
+        "parameters":[
+          {
+            "name": "token",
+            "in": "header",
+            "description": "Token generate by the system on login process",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/Company_category"
+            }
+          },
+          "404": {
+            "description": "Companies categories not found"
+          },
+          "500": {
+            "description": "Failed while trying to fetch company category"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Company_categories"
+        ],
+        "summary": "create new category",
+        "description": "Allow admin to add new category into the system",
+         "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "header",
+            "description": "Token generate by the system on login process",
+            "required": true
+          },
+          {
+            "name": "name",
+            "in": "formData",
+            "description": "name of category or reference",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "description",
+            "in": "formData",
+            "description": "Details about category",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "active",
+            "in": "formData",
+            "description": "Boolean value that receive true if category is active and false if category is deactivated",
+            "required": true,
+            "type": "boolean",
+            "default": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "The category was created"
+          },
+          "400": {
+            "description": "Bad parameters were passed"
+          },
+          "500": {
+            "description": "The server failed"
+          }
+        }
+      }
+    },
+    "/categories/{category_id}": {
+      "put":{
+         "tags": [
+          "Company_categories"
+        ],
+        "summary": "update category",
+        "description": "Allow admin to change the name or/e description of category",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          { 
+            "name": "token",
+            "in": "header",
+            "description": "Token generate by the system on login process",
+            "required": true
+          },
+          {
+            "name": "category_id",
+            "in": "path",
+            "description": "Id of category",
+            "required": true
+          },
+         
+          {
+            "name": "name",
+            "in": "formData",
+            "description": "name of category or reference",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "description",
+            "in": "formData",
+            "description": "Details about category",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The category was updated"
+          },
+          "400": {
+            "description": "Bad parameters were passed"
+          },
+          "404": {
+            "description": "The category is not found"
+          },
+          "500": {
+            "description": "The server failed"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Company_categories"
+        ],
+        "summary": "Get categories y id",
+        "description": "Allow admin to information about categories",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          { 
+            "name": "token",
+            "in": "header",
+            "description": "Token generate by the system on login process",
+            "required": true
+          },
+          {
+            "name": "category_id",
+            "in": "path",
+            "description": "Id of category",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success to retrieve category information"
+          },
+          "400": {
+            "description": "Bad parameters were passed"
+          },
+          "404": {
+            "description": "The category is not found"
+          },
+          "500": {
+            "description": "The server failed"
+          }
+        }
+      }
+    },
+    "categories/category_id/deactivated":{
+      "put": {
+       "tags": [
+          "Company_categories"
+        ],
+        "summary": "Activate or deactivate category",
+        "description": "Allow admin to information about categories",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          { 
+            "name": "token",
+            "in": "header",
+            "description": "Token generate by the system on login process",
+            "required": true
+          },
+          {
+            "name": "category_id",
+            "in": "path",
+            "description": "Id of category",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The category was activated or deactivated"
+          },
+          "404": {
+            "description": "The category is not found"
+          },
+          "500": {
+            "description": "The server failed"
+          }
+        }
+      }
+    },
+    "/companies/{company_id}": {
+      "get": {
+        "tags": [
+          "Company"
+        ],
+        "summary": "Find company by id",
+        "description": "Return company if exist",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+            {
+            "name": "token",
+            "in": "header",
+            "description": "Company's id",
+            "required": true
+          },
+          {
+            "name": "company_id",
+            "in": "path",
+            "description": "Company's id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "Failed while trying to fetch companies"
+          },
+          "404": {
+            "description": "Moderator has no company registered yet!"
+          },
+          "200": {
+            "description": "Success on finding company",
+            "schema": {
+              "$ref": "#/definitions/Company"
+            }
+          }
+        }
+      }
+    },
+    "/companies": {
+      "get": {
+        "tags": [
+          "Company"
+        ],
+        "summary": "Find all registered companies",
+        "description": "Return all available companies",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "header",
+            "description": "Token generated on login",
+            "required": true
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "The server failed"
+          },
+          "404": {
+            "description": "No company was found"
+          },
+          "400": {
+            "description": "The provided user does not exist or is invalid."
+          },
+          "200": {
+            "description": "Success of finding companies",
+            "schema": {
+              "$ref": "#/definitions/Company"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Company"
+        ],
+        "summary": "Register company",
+        "description": "Allow moderator to add new company",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "token",
+            "required": true,
+             "description": "token generated on login"
+            },
+          {
+            "in": "formData",
+            "name": "name",
+            "description": "Company name",
+            "required": true,
+            "type": "string",
+            "example": "Pavulla"
+          },
+          {
+            "in": "formData",
+            "name": "description",
+            "description": "About company",
+            "required": true,
+            "type": "string",
+            "example": "Pavulla is bla bla bla,...."
+          },
+          {
+            "in": "formData",
+            "name": "stablished_date",
+            "description": "Date the company was established",
+            "required": true,
+            "type": "date",
+            "example": "2020-12-07"
+          },
+          {
+            "in": "formData",
+            "name": "region",
+            "description": "Region's example: Africa, America, Europe",
+            "example": "Oceania"
+          },
+          {
+            "in": "formData",
+            "name": "country",
+            "description": "Country's example: Mozambique, Angola, Brasil",
+              "example": "England"
+          },
+          {
+            "in": "formData",
+            "name": "province",
+            "description": "Refer to province or state",
+            "example": "California, Luanda"
+          },
+          {
+            "in": "formData",
+            "name": "city",
+            "description": "City's example: Maputo, Matola, Maxixe",
+            "example": "Maxixe"
+          },
+          {
+            "in": "formData",
+            "name": "block",
+            "description": "Block or avenue",
+            "example": "Samora Machel"
+          },
+          {
+            "in": "formData",
+            "name": "house_nr",
+            "description": "House number",
+            "type": "string",
+            "example": "123"
+          },
+          {
+            "in": "formData",
+            "name": "postal_code",
+            "description": "Postal code",
+            "type": "string",
+            "example": "1234"
+          },
+          {
+            "in": "formData",
+            "name": "name_stage",
+            "description": "Company's stage",
+            "type": "string",
+            "example": "Iniciante"
+          },
+          {
+            "in": "formData",
+            "name": "description_stage",
+            "description": "Description of stage company",
+            "type": "string",
+            "example": "Iniciante is a company that does ,..."
+          },
+          {
+            "in": "formData",
+            "name": "has_website",
+            "description": "Boolean values to describe if user has website",
+            "type": "boolean",
+            "default": false
+          },
+          {
+            "in": "formData",
+            "name": "url",
+            "description": "URL of website",
+            "type": "url",
+            "example": "www.pavulla.com"
+            
+          },
+          {
+            "in": "formData",
+            "name": "number_employees",
+            "description": "Number of employees that the company has",
+            "type": "number",
+            "example": 1
+          },
+          {
+            "in": "formData",
+            "name": "active",
+            "description": "If company is active pass true",
+            "type": "boolean",
+            "default": true
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "The server failed"
+          },
+          "400": {
+            "description": "Bad parameters were passed"
+          },
+          "201": {
+            "description": "The company was successfully added"
+          }
+        }
+      }
+    },
+    "companies/{company_id}": {
+      "put": {
+        "tags": [
+          "Company"
+        ],
+        "summary": "Update company",
+        "description": "Allow moderator to update company",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "token",
+            "required": true,
+             "description": "token generated on login"
+            },
+          {
+            "in": "formData",
+            "name": "name",
+            "description": "Company name",
+            "required": true,
+            "type": "string",
+            "example": "Pavulla"
+          },
+          {
+            "in": "formData",
+            "name": "description",
+            "description": "About company",
+            "required": true,
+            "type": "string",
+            "example": "Pavulla is bla bla bla,...."
+          },
+          {
+            "in": "formData",
+            "name": "stablished_date",
+            "description": "Date the company was established",
+            "required": true,
+            "type": "date",
+            "example": "2020-12-07"
+          },
+          {
+            "in": "formData",
+            "name": "region",
+            "description": "Region's example: Africa, America, Europe",
+            "example": "Oceania"
+          },
+          {
+            "in": "formData",
+            "name": "country",
+            "description": "Country's example: Mozambique, Angola, Brasil",
+              "example": "England"
+          },
+          {
+            "in": "formData",
+            "name": "province",
+            "description": "Refer to province or state",
+            "example": "California, Luanda"
+          },
+          {
+            "in": "formData",
+            "name": "city",
+            "description": "City's example: Maputo, Matola, Maxixe",
+            "example": "Maxixe"
+          },
+          {
+            "in": "formData",
+            "name": "block",
+            "description": "Block or avenue",
+            "example": "Samora Machel"
+          },
+          {
+            "in": "formData",
+            "name": "house_nr",
+            "description": "House number",
+            "type": "string",
+            "example": "123"
+          },
+          {
+            "in": "formData",
+            "name": "postal_code",
+            "description": "Postal code",
+            "type": "string",
+            "example": "1234"
+          },
+          {
+            "in": "formData",
+            "name": "name_stage",
+            "description": "Company's stage",
+            "type": "string",
+            "example": "Iniciante"
+          },
+          {
+            "in": "formData",
+            "name": "description_stage",
+            "description": "Description of stage company",
+            "type": "string",
+            "example": "Iniciante is a company that does ,..."
+          },
+          {
+            "in": "formData",
+            "name": "has_website",
+            "description": "Boolean values to describe if user has website",
+            "type": "boolean",
+            "default": false
+          },
+          {
+            "in": "formData",
+            "name": "url",
+            "description": "URL of website",
+            "type": "url",
+            "example": "www.pavulla.com"
+            
+          },
+          {
+            "in": "formData",
+            "name": "number_employees",
+            "description": "Number of employees that the company has",
+            "type": "number",
+            "example": 1
+          },
+          {
+            "in": "formData",
+            "name": "active",
+            "description": "If company is active pass true",
+            "type": "boolean",
+            "default": true
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "The server failed"
+          },
+          "404": {
+            "description": "The provided Company does not exist!"
+          },
+          "400": {
+            "description": "Bad parameters were passed"
+          },
+          "200": {
+            "description": "The company was successfully updated"
+          }
+        }
+       }
+    },
+    "companies/:company_id/changeModerator": {
+       "put": {
+        "tags": [
+          "Company"
+        ],
+        "summary": "Change company's moderator",
+        "description": "Allow admin to change moderator of company",
+        "operationId": "changeModerator",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "header",
+            "required": true,
+            "description": "Token is generate on login"
+          },
+          {
+            "name": "company_id",
+            "in": "path",
+            "required": true,
+            "description": "company id"
+          },
+          {
+            "name": "moderator_id",
+            "in": "formData",
+            "required": true,
+            "description": "moderator id"
+          }
+        ], 
+        "responses": {
+          "500": {
+            "description": "The server failed"
+          },
+          "404": {
+            "description": "User not found!"
+          },
+          "400": {
+            "description": "Bad parameters were passed"
+          },
+          "200": {
+            "description": "The company was successfully updated"
+          }
+        }
+        
+      }
+    },
+    "/companies/{company_id}/deactivate": {
+      "put": {
+        "tags": [
+          "Company"
+        ],
+        "summary": "Deactivate or active " ,
+        "description": "Allow moderator or admin to deactivate or active company",
+        "operationId": "activeCompany",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "header",
+            "description": "admin or moderator token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "company_id",
+            "in": "path",
+            "description": "id of company to be deactivated or activate",
+            "required": true,
+            "example": "6049eb361a2b4a0015c9f5c3"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The company was deactivate or activate"
+          },
+          "400": {
+            "description": "Bad parameters"
+          },
+          "404": {
+            "description": "The company was not found"
+          },
+          "500": {
+            "description": "The server failed to active or deactivate user"
+          }
+        }
+      }
+    },
+    "/companies/{company_id}/users": {
+      "post": {
+        "tags": [
+          "Company"
+        ],
+        "summary": "Add user to company",
+        "description": "Allow moderator do register new users to a company",
+        "operationId": "AddUserToACompany",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "header", 
+            "name": "token",
+            "required": true,
+            "description": "token is generate on login"
+          },
+          {
+            "in": "formData",
+            "name": "first_name",
+            "description": "First name",
+            "required": true,
+            "example": "Salmento"
+          },
+          {
+            "in": "formData",
+            "name": "middle_name",
+            "description": "Middle name",
+            "example": "Adelia"
+          },
+          {
+            "in": "formData",
+            "name": "last_name",
+            "description": "Last name",
+            "required": true,
+             "example": "Chitlango"
+          },
+          {
+            "in": "formData",
+            "name": "birth_date",
+            "description": "Birth date name",
+            "required": true,
+            "example": "1998-05-05"
+          },
+          {
+            "in": "formData",
+            "name": "email",
+            "description": "user email",
+            "required": true,
+            "type": "email",
+            "example": "salmentochitlango@gmail.com"
+          },
+          {
+            "in": "formData",
+            "name": "region",
+            "description": "Region Africa America Europe,...",
+            "type": "string",
+            "example": "Africa"
+          },
+          {
+            "in": "formData",
+            "name": "country",
+            "description": "Country can be Mozambique, South Africa, United States,...",
+            "type": "string",
+            "example": "South Africa"
+          },
+          {
+            "in": "formData",
+            "name": "Province",
+            "description": "province can refer to province or state",
+            "type": "string",
+            "example": "Cabo de Delgado"
+          },
+          {
+            "in": "formData",
+            "name": "city",
+            "description": "City's example: Maputo Matola",
+            "type": "string",
+             "example": "Matola"
+          },
+          {
+            "in": "formData",
+            "name": "house_nr",
+            "description": "House number",
+            "type": "string",
+            "example": "123"
+          },
+          {
+            "in": "formData",
+            "name": "postal_code",
+            "description": "Postal code",
+            "type": "string",
+            "example": "1116"
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "The served failed"
+          },
+          "400": {
+            "description": "The provided company is invalid or does not exist"
+          },
+          "201": {
+            "description": "The user was successfully added to the company!"
+          }
+        }
+      }
+    },
+    "/companies/{company_id}/folders": {
+      "post": {
+        "tags": [
+          "Folders"
+        ],
+        "summary": "Create new folder at the company",
+        "description": "Allow moderator and users to create folders",
+        "operationId": "CreateFolder",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "header",
+            "description": "token is generate on login",
+            "required": true
+          },
+          {
+            "name": "company_id",
+            "in": "path",
+            "description": "Id of company the user pretend to create the folder",
+            "required": true
+          },
+          {
+            "name": "designation",
+            "in": "formData",
+            "description": "Folder's designation",
+            "required": true,
+            "example": "ID"
+          },
+          {
+            "name": "description",
+            "in": "formData",
+            "description": "Folder's description",
+            "required": true,
+            "example": "This folder contain only id"
+          },
+          {
+            "name": "documental_category",
+            "in": "formData",
+            "description": "Documental category",
+            "required": true,
+            "example": "ID documents"
+          },
+          {
+            "name": "grant_access",
+            "in": "formData",
+            "description": "An array of users id that were allowed to access the folder",
+            "required": true,
+            "type": "array",
+            "example": ["60462add995a170015e7edb4", "60462add995a170015e7edb4"]
+          },
+          {
+            "name": "separator",
+            "in": "formData",
+            "description": "Folder separator can be: Month, year of subject",
+            "required": true,
+            "example": "september"
+          },
+          {
+            "name": "active",
+            "in": "formData",
+            "description": "Boolean value represent if the folder is or not active",
+            "default": true
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "The server failed to respond"
+          },
+          "400": {
+            "description": "Bad parameters were passed"
+          },
+          "201": {
+            "description": "The folder was created"
+          }
+        }
+      }
+    },
+    "/companies/folder/{folder_id}": {
+      "put": {
+        "tags": [
+          "Folders"
+        ],
+        "summary": "Update folder",
+        "description": "Pass id of folder to update it",
+        "operationId": "UpdateFolder",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "header",
+            "description": "token is generate on login",
+            "required": true
+          },
+          {
+            "name": "company_id",
+            "in": "path",
+            "description": "Id of company the user pretend to create the folder",
+            "required": true
+          },
+          {
+            "name": "designation",
+            "in": "formData",
+            "description": "Folder's designation",
+            "required": true,
+            "example": "ID"
+          },
+          {
+            "name": "description",
+            "in": "formData",
+            "description": "Folder's description",
+            "required": true,
+            "example": "This folder contain only id"
+          },
+          {
+            "name": "documental_category",
+            "in": "formData",
+            "description": "Documental category",
+            "required": true,
+            "example": "ID documents"
+          },
+          {
+            "name": "grant_access",
+            "in": "formData",
+            "description": "An array of users id that were allowed to access the folder",
+            "required": true,
+            "type": "array",
+            "example": ["60462add995a170015e7edb4", "60462add995a170015e7edb4"]
+          },
+          {
+            "name": "separator",
+            "in": "formData",
+            "description": "Folder separator can be: Month, year of subject",
+            "required": true,
+            "example": "setembro"
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "The server failed to respond"
+          },
+          "403": {
+            "description": "the user does not have right to modify this folder"
+          },
+          "401": {
+            "description": "The user does not have right to update this folder"
+          },
+          "400": {
+            "description": "Bad parameters were passed"
+          },
+          "200": {
+            "description": "The folder was updated"
+          }
+        }
+      }
+    },
+    "/{company_id}/folders": {
+      "get": {
+        "tags": [
+          "Folders"
+        ],
+        "summary": "folder available in a company",
+        "description": "Returns  all folder available in a company ",
+        "operationId": "getFolder",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+            {
+            "in": "header",
+            "name": "token",
+            "description": "Token is generate on login",
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "company_id",
+            "description": "Company's id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "The server failed to fetch folders"
+          },
+          "404": {
+            "description": "No folder were found"
+          },
+          "403": {
+            "description": "The correct user does not have access to any folder"
+          },
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "companies/folder/{folder_id}/deactivated": {
+      "put": {
+        "tags": [
+          "Folders"
+        ],
+        "summary": "deactivate Folder",
+        "description": "Allow moderator e user deactivate folder",
+        "operationId": "DeactivateFolder",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "header",
+            "description": "the token is generate on login",
+            "required": true
+          },
+          {
+            "name": "folder_id",
+            "in": "path",
+            "description": "Id of folder",
+            "required": true
+          }
+          
+        ],
+        "responses": {
+          "500": {
+            "description": "The server failed to respond"
+          },
+          "404": {
+            "description": "Folder does not exist"
+          },
+          "401": {
+            "description": "The user does not have right to update folder/document"
+          },
+          "400": {
+            "description": "Bad parameters were passed"
+          },
+          "200": {
+            "description": "The folder was successfully updated"
+          }
+        }
+      }
+    },
+    "companies/folder/{folder_id/documents}/{document_id}/status": {
+      "put": {
+        "tags": [
+          "Documents"
+        ],
+        "summary": "Document status",
+        "description": "Allow moderator to change the status of document",
+        "operationId": "UpdateDocument",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "header",
+            "description": "the token is generate on login",
+            "required": true
+          },
+          {
+            "name": "folder_id",
+            "in": "path",
+            "description": "Id of folder that the document is in",
+            "required": true
+          },
+          {
+            "name": "document_id",
+            "in": "path",
+            "description": "Id of document that the moderator pretend to update",
+            "required": true
+          },
+          {
+            "name": "status",
+            "in": "formData",
+            "description": "It receive one of this status 'initiated' 'progress' or 'closed'",
+            "required": true,
+            "enum": ["initiated","progress","closed"],
+            "default": "initiated"
+          },
+          {
+            "name": "comment",
+            "in": "formData",
+            "description": "Allow moderator justify why he had changed the document status"
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "The server failed to respond"
+          },
+          "404": {
+            "description": "Folder/document does not exist"
+          },
+          "401": {
+            "description": "The user does not have right to update this folder"
+          },
+          "400": {
+            "description": "Bad parameters were passed"
+          },
+          "200": {
+            "description": "The Document was updated"
+          }
+        }
+      }
+    },
+    "companies/folder/{folder_id}/documents": {
+      "post": {
+        "tags": [
+          "Documents"
+        ],
+        "summary": "Add new document to folder",
+        "description": "Allow users and moderator to create new folders",
+        "operationId": "CreateDocument",
+        "consumes": [
+          "application/json",
+          "multipart/form-data"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+             "in": "header",
+             "required": true,
+             "description": "the token is generate on login"
+          },
+          {
+            "name": "folder_id",
+            "in": "path",
+            "description": "Id of folder the user pretend to add new document",
+            "required": true
+          },
+          {
+            "name": "name",
+            "in": "formData",
+            "description": "name of document",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "description",
+            "in": "formData",
+            "description": "Document's description",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "issue_date",
+            "in": "formData",
+            "description": "Issue date",
+            "required": true,
+            "type": "date"
+          },
+          {
+            "name": "issue_cost",
+            "in": "formData",
+            "description": "Issue cost",
+            "type": "float"
+    
+          },
+          {
+            "name": "expiry_date",
+            "in": "formData",
+            "description": "Date that the document get expiry",
+            "type": "date"
+          },
+          {
+            "name": "status",
+            "in": "formData",
+            "description": "It receive one of this status 'initiated' 'progress' or 'closed'",
+            "required": true,
+            "default": "initiated"
+          },
+          {
+            "name": "file",
+            "in": "formData",
+            "description": "Store the path to find document",
+            "type": "file",
+            "required": true
+          },
+          {
+            "name": "comment",
+            "in": "formData",
+            "description": "Allow moderator justify why he had changed the document status",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "The server failed to respond"
+          },
+          "404": {
+            "description": "Folder does not exist"
+          },
+          "401": {
+            "description": "The user does not have right to update this folder"
+          },
+          "400": {
+            "description": "Bad parameters were passed"
+          },
+          "200": {
+            "description": "The Document was created",
+            "schema": {
+              "$ref": "#/definitions/Document"
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Documents"
+        ],
+        "summary": "List Document",
+        "description": "Allow moderator and user see documents",
+        "operationId": "ListDocument",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token", 
+            "in": "header",
+            "description": "The token is generate on login",
+            "required": true
+          },
+          {
+            "name": "folder_id",
+            "in": "path",
+            "description": "Id of folder that the document is in",
+            "required": true
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "The server failed to respond"
+          },
+          "404": {
+            "description": "Folder/document/company does not exist"
+          },
+          "401": {
+            "description": "The user does not have right to update folder/document"
+          },
+          "400": {
+            "description": "Bad parameters were passed"
+          },
+          "200": {
+            "description": "The document was successfully updated"
+          }
+        }
+      }
+    },
+    "comapanies/folder/{folder_id}/documents/{document_id}/change": {
+      "put": {
+        "tags": [
+          "Documents"
+        ],
+        "summary": "Change Document",
+        "description": "Allow moderator e user to change document and deactivate the changed document",
+        "operationId": "ChangeDocument",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+           {
+            "name": "token", 
+            "in": "header",
+            "description": "The token is generate on login",
+            "required": true
+          },
+          {
+            "name": "folder_id",
+            "in": "path",
+            "description": "Id of folder that the document is in",
+            "required": true
+          },
+          {
+            "name": "document_id",
+            "in": "path",
+            "description": "Id of document that the moderator pretend to deactivate",
+            "required": true
+          },
+          {
+            "name": "name",
+            "in": "formData",
+            "description": "name of document",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "description",
+            "in": "formData",
+            "description": "Document's description",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "issue_date",
+            "in": "formData",
+            "description": "Issue date",
+            "required": true,
+            "type": "date"
+          },
+          {
+            "name": "issue_cost",
+            "in": "formData",
+            "description": "Issue cost",
+            "type": "float"
+          },
+          {
+            "name": "expiry_date",
+            "in": "formData",
+            "description": "Date that the document get expiry",
+            "type": "date"
+          },
+          {
+            "name": "status",
+            "in": "formData",
+            "description": "It receive one of this status 'initiated' 'progress' or 'closed'",
+            "required": true,
+            "default": "initiated",
+            "type": "string",
+            "enum": ["initiated", "progress", "closed"]
+          },
+          {
+            "name": "file",
+            "in": "formData",
+            "description": "Store the path to find document",
+            "type": "file"
+          },
+          {
+            "name": "active",
+            "in": "formData",
+            "description": "It receive one of this 'true or false'",
+            "type": "boolean",
+            "enum": [true, false]
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "The server failed to respond"
+          },
+          "404": {
+            "description": "Folder/document/company does not exist"
+          },
+          "401": {
+            "description": "The user does not have right to update folder/document"
+          },
+          "400": {
+            "description": "Bad parameters were passed"
+          },
+          "200": {
+            "description": "The document was successfully updated",
+            "schema": {
+              "$ref": "#/definitions/Document"
+            }
+          }
+        }
+      }
+    },
+    "companies/folder/{folder_id}/documents/{document_id}/active": {
+      "put": {
+        "tags": [
+          "Documents"
+        ],
+        "summary": "deactivate Document",
+        "description": "Allow moderator e user deactivate document",
+        "operationId": "DeactivateDocument",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "header",
+            "description": "The token is generate on login into the system",
+            "required": true
+          },
+          {
+            "name": "folder_id",
+            "in": "path",
+            "description": "Id of folder that the document is in",
+            "required": true
+          },
+          {
+            "name": "document_id",
+            "in": "path",
+            "description": "Id of document that the moderator pretend to deactivate",
+            "required": true
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "The server failed to respond"
+          },
+          "404": {
+            "description": "Folder/document/company does not exist"
+          },
+          "401": {
+            "description": "The user does not have right to update folder/document"
+          },
+          "400": {
+            "description": "Bad parameters were passed"
+          },
+          "200": {
+            "description": "The document was successfully updated",
+            "schema": {
+              "$ref": "#/definitions/Document"
+            }
+          }
+        }
+      }
+    },
+    "/folders": {
+      "post": {
+        "tags": [
+          "Folders"
+        ],
+       "summary": "Allow user create folder",
+       "description": "Allow users to create folders that's aren't attached to any company",
+       "operationId": "createFolderUsers",
+        "consumes": [
+          "application/json"
+        ],
+         "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "designation",
+            "in": "formData",
+            "description": "folder's name",
+            "required": true
+          },
+          {
+            "name": "descriptiom",
+            "in": "formData",
+            "description": "Little description about what the folder will contain",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "documental_category",
+            "in": "formData",
+            "description": "",
+            "required": true,
+            "type": "string"
+          },
+            {
+            "name": "grant_access",
+            "in": "formData",
+            "description": "A list of users id that can access the folder",
+            "required": true,
+            "type": "array"
+          },
+          {
+            "name": "active",
+            "in": "formData",
+            "description": "",
+            "required": true,
+            "enum": [true, false],
+            "type": "boolean"
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "The server failed to respond"
+          },
+          "400": {
+            "description": "Bad paramenters were passed"
+          },
+          "201": {
+            "description": "The folder was was created"
+          }
+        }
+      
+    },
+    "get": {
+        "tags": [
+          "Folders"
+        ],
+        "summary": "List all folders",
+        "description": "Allow users to list folders",
+        "operationId": "getFolderss",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "header",
+            "description": "The token is generated on login",
+            "required": true
+          }
+          
+        ],
+        "responses": {
+          "500": {
+            "description": "The server failed to respond"
+          },
+          "404": {
+            "description": "No folder were found"
+          },
+          "401": {
+            "description": "The user does not have access to the folder "
+          },
+          "400": {
+            "description": "Bad parameters were mispassed"
+          },
+          "200": {
+            "description": "The document was successfully updated",
+            "schema": {
+              "$ref": "#/definitions/Folder"
+            }
+          }
+        }
+      }
+    },
+    "folders/{folderId}":{
+    "get": {
+        "tags": [
+          "Folders"
+        ],
+        "summary": "Get folder by id",
+        "description": "Allow users to display only one folder",
+        "operationId": "getFolderss",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "header",
+            "description": "The token is generated on login",
+            "required": true
+          },
+          {
+            "name": "folder_id",
+            "in": "path",
+            "description": "Id of solicitation",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Solicitation"
+            }
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "The server failed to respond"
+          },
+          "404": {
+            "description": "No folder were found"
+          },
+          "401": {
+            "description": "The user does not have access to the folder "
+          },
+          "400": {
+            "description": "Bad parameters were mispassed"
+          },
+          "200": {
+            "description": "The document was successfully updated",
+            "schema": {
+              "$ref": "#/definitions/Folder"
+            }
+          }
+        }
+      }
+    },
+    "/folder/{folder_id}/documents/solicitation": {
+      "post": {
+        "tags": [
+          "Solicitations"
+        ],
+        "summary": "Ask for Document",
+        "description": "Allow users to require document",
+        "operationId": "createSolicitation",
+        "consumes": [
+          "multipart/form-data",
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "folder_id",
+            "in": "path",
+            "description": "Id of folder that the document is in",
+            "required": true
+          },
+          {
+            "name": "subject",
+            "in": "formData",
+            "description": "The request subject",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "description",
+            "in": "formData",
+            "description": "request description",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "issue_date",
+            "in": "formData",
+            "description": "The issue date of solicitation",
+            "required": true,
+            "type": "date"
+          },
+          {
+            "name": "status",
+            "in": "formData",
+            "description": "The status of request can be 'initiated' 'progress', 'closed'",
+            "required": true,
+            "default": "initiated",
+            "enum": ["initiated", "progress", "closed"]
+          },
+          {
+            "name": "file",
+            "in": "formData",
+            "description": "allow users to attach document if necessary",
+            "type": "file"
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "The server failed to respond"
+          },
+          "400": {
+            "description": "Bad parameters were passed"
+          },
+          "201": {
+            "description": "The document solicitation was created"
+          }
+        }
+      }
+    },
+    "/folder/documents/solicitation/{solicitation_id}": {
+      "put": {
+        "tags": [
+          "Solicitations"
+        ],
+        "summary": "Answer solicitation",
+        "description": "Allow moderator to respond solicitation",
+        "operationId": "answerSolicitation",
+        "consumes": [
+          "multipart/form-data",
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "header",
+            "required": true,
+            "description": "The token is generate on login"
+          },
+          {
+            "name": "solicitation_id",
+            "in": "path",
+            "description": "Id of solicitation",
+            "required": true
+          },
+          {
+            "name": "status",
+            "in": "formData",
+            "description": "Allow moderator to update the status of documents to progress or closed",
+            "required": true,
+            "type": "string",
+            "enum": ["initiated", "progress", "closed"]
+          },
+          {
+            "name": "file",
+            "in": "formData",
+            "description": "Allow moderator to attach document if necessary",
+            "required": true,
+            "type": "file"
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "The server failed to respond"
+          },
+          "404": {
+            "description": "Solicitation does not exist"
+          },
+          "401": {
+            "description": "The user does not have right to update solicitation"
+          },
+          "400": {
+            "description": "Bad parameters were passed"
+          },
+          "200": {
+            "description": "The document was successfully updated"
+           
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Solicitations"
+        ],
+        "summary": "get solicitation by id",
+        "description": "Allow moderator and users to get solicitation",
+        "operationId": "getSolicitation",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "header",
+            "description": "The token is generated on login",
+            "required": true
+          },
+          {
+            "name": "solicitation_id",
+            "in": "path",
+            "description": "Id of solicitation",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Solicitation"
+            }
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "The server failed to respond"
+          },
+          "404": {
+            "description": "Solicitation does not exist"
+          },
+          "401": {
+            "description": "The user does not have right to list solicitation"
+          },
+          "400": {
+            "description": "Bad parameters were passed"
+          },
+          "200": {
+            "description": "The document was successfully updated",
+            "schema": {
+              "$ref": "#/definitions/Solicitation"
+            }
+          }
+        }
+      }
+    },
+    "/folder/documents/solicitation/all": {
+      "get": {
+        "tags": [
+          "Solicitations"
+        ],
+        "summary": "List solicitation",
+        "description": "Allow moderator and users to list solicitation",
+        "operationId": "listSolicitation",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "header",
+            "description": "The token is generated on login",
+            "required": true
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "The server failed to respond"
+          },
+          "404": {
+            "description": "the user doesn't have solicitation associated  to him"
+          },
+     
+          "400": {
+            "description": "Bad parameters were passed"
+          },
+          "200": {
+            "description": "The operation successes"
+            
+          }
+        }
+      }
+    },
+    "/notifications/{notification_id}": {
+      "put": {
+        "tags": [
+          "Notifications"
+        ],
+        "summary": "Read notification",
+        "description": "Update notifications to read when user click on it",
+        "operationId": "readSolicitation",
+        "parameters": [
+                  {
+            "name": "token",
+            "in": "header",
+            "description": "The token is generated on login",
+            "required": true
+          },
+          {
+            "name": "notification_id",
+            "in": "path",
+            "description": "Id of notification",
+            "required": true
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "The server failed to respond"
+          },
+          "404": {
+            "description": "the notification does not exist"
+          },
+          "401": {
+            "description": "The user is not associated with passed id notification"
+          },
+          "400": {
+            "description": "Bad parameters were passed"
+          },
+          "200": {
+            "description": "Update notification"
+          }
+        }
+      }
+    },
+    "/notifications/": {
+      "get": {
+        "tags": [
+          "Notifications"
+        ],
+        "summary": "List notifications",
+        "description": "Allow login user to get notifications",
+        "operationId": "listSolicitation",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+             {
+            "name": "token",
+            "in": "header",
+            "description": "The token is generated on login",
+            "required": true
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "The server failed to respond"
+          },
+          "404": {
+            "description": "Notification does not exist"
+          },
+          "400": {
+            "description": "Bad parameters were passed"
+          },
+          "200": {
+            "description": "List"
+            
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Users": {
+      "type": "object",
+      "required": [
+        "first_name",
+        "last_name",
+        "username",
+        "email",
+        "password"
+      ],
+      "properties": {
+        "_id": {
+          "type": "ObjectId"
+        },
+        "first_name": {
+          "type": "string"
+        },
+        "middle_name": {
+          "type": "string"
+        },
+        "last_name": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "birth_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "profile_img": {
+          "type": "string"
+        },
+        "region": {
+          "type": "string"
+        },
+        "country": {
+          "type": "string"
+        },
+        "province": {
+          "type": "string"
+        },
+        "city": {
+          "type": "string"
+        },
+        "house_nr": {
+          "type": "string"
+        },
+        "postal_code": {
+          "type": "string"
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Roles"
+          }
+        },
+        "company_id": {
+          "type": "ObjectId",
+          "$ref": "#/definitions/Company"
+        },
+        "active": {
+          "type": "boolean"
+        }
+      }
+    },
+    "Roles": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "ObjectId"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "Company_category": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "ObjectId"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "Company": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "stablished_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "address": {
+          "$ref": "#/definitions/Address"
+        },
+        "stage": {
+          "$ref": "#/definitions/Stage"
+        },
+        "support_required": {
+          "$ref": "#/definitions/Support"
+        },
+        "website": {
+          "$ref": "#/definitions/Website"
+        },
+        "company_category_id": {
+          "type": "ObjectId",
+          "$ref": "#/definitions/Company_category"
+        },
+        "moderator": {
+          "type": "ObjectId",
+          "$ref": "#/definitions/Users"
+        },
+        "number_employees": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "active": {
+          "type": "Boolean"
+        }
+      }
+    },
+    "Address": {
+      "type": "object",
+      "properties": {
+        "country": {
+          "type": "string"
+        },
+        "region": {
+          "type": "string"
+        },
+        "province": {
+          "type": "string"
+        },
+        "city": {
+          "type": "string"
+        },
+        "block": {
+          "type": "string"
+        },
+        "house_nr": {
+          "type": "string"
+        },
+        "postal_code": {
+          "type": "string"
+        }
+      }
+    },
+    "Support": {
+      "type": "object",
+      "properties": {
+        "name_support": {
+          "type": "string"
+        },
+        "description_support": {
+          "type": "string"
+        }
+      }
+    },
+    "Stage": {
+      "type": "object",
+      "properties": {
+        "name_stage": {
+          "type": "string"
+        },
+        "description_stage": {
+          "type": "string"
+        }
+      }
+    },
+    "Website": {
+      "type": "object",
+      "properties": {
+        "has_website": {
+          "type": "boolean",
+          "default": false
+        },
+        "url": {
+          "type": "string"
+        }
+      }
+    },
+    "Document": {
+      "type": "object",
+      "properties": {
+        "folder_id": {
+          "type": "ObjectId",
+          "$ref": "#/definitions/Folder"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "issue_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "issue_cost": {
+          "type": "number",
+          "default": 0
+        },
+        "expiry_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "initiated",
+            "progress",
+            "closed"
+          ]
+        },
+        "document_file": {
+          "type": "string"
+        },
+        "comment": {
+          "type": "string"
+        },
+        "active": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
+    "Folder": {
+      "type": "object",
+      "properties": {
+        "company_id": {
+          "type": "ObjectId",
+          "$ref": "#/definitions/Company"
+        },
+        "designation": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "documental_category": {
+          "type": "string"
+        },
+        "grant_access": {
+          "type": "array",
+          "items": {
+            "type": "ObjectId",
+            "$ref": "#/definitions/Users"
+          }
+        },
+        "separator": {
+          "type": "string"
+        },
+        "active": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
+    "Notification": {
+      "type": "object",
+      "required": [
+        "client",
+        "moderator"
+      ],
+      "properties": {
+        "moderator": {
+          "type": "ObjectId",
+          "$ref": "#/definitions/Users"
+        },
+        "client": {
+          "type": "ObjectId",
+          "$ref": "#/definitions/Users"
+        },
+        "subject": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "statusReadByClient": {
+          "type": "boolean",
+          "default": false
+        },
+        "statusReadByModerator": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "Solicitation": {
+      "type": "object",
+      "properties": {
+        "folder": {
+          "type": "ObjectId",
+          "$ref": "#/definitions/Folder"
+        },
+        "subject": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "issue_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "initiation",
+            "progress",
+            "closed"
+          ]
+        },
+        "file": {
+          "type": "string"
+        },
+        "file_response": {
+          "type": "string"
+        },
+        "moderator": {
+          "type": "ObjectId",
+          "$ref": "#/definitions/Users"
+        },
+        "client": {
+          "type": "ObjectId",
+          "$ref": "#/definitions/Users"
+        }
+      }
+    },
+    "Action": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "user_id": {
+          "type": "ObjectId",
+          "$ref": "#/definitions/Users"
+        }
+      }
+    }
+  }
+}
